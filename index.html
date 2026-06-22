@@ -1,19 +1,154 @@
-<!DOCTYPE html><html lang="zh-CN"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>终极修仙版V4</title><link rel="stylesheet" href="style.css"></head>
-<body><div class="bg"></div><div class="app">
-<header><h1>修仙之路</h1><div class="res">💎<b id="jade"></b> 🪙<b id="stone"></b> ⚔️<b id="power"></b></div></header>
-<main>
-<section class="hero">
-<div class="pics"><img src="hero.svg" class="heroimg"><img src="fox.svg" class="fox"></div>
-<div class="info"><h2>修仙者</h2><p>境界：<span id="realm"></span></p><p>灵根：<span class="gold">天灵根</span></p><div class="bar"><div id="xpbar"></div></div><p>修为：<span id="xp"></span>/<span id="need"></span></p><button onclick="cultivate()">开始修炼</button><button onclick="breakthrough()">突破</button></div>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>终极修仙版V7豪华版</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg"></div>
+<div class="app">
+<header class="top glass">
+  <div>
+    <h1>修仙之路 V7</h1>
+    <p>豪华图片版 · 开局999999 · 自动挂机</p>
+  </div>
+  <div class="res">
+    <span>💎仙玉 <b id="jade"></b></span>
+    <span>🪙灵石 <b id="stone"></b></span>
+    <span>⚔️战力 <b id="power"></b></span>
+    <span>👑VIP <b>15</b></span>
+  </div>
+</header>
+
+<section class="main glass">
+  <div class="heroStage">
+    <img src="assets/hero.svg" class="heroImg">
+    <img src="assets/fox.svg" class="foxImg">
+  </div>
+  <div class="info">
+    <h2>修仙者</h2>
+    <p>境界：<b id="realm"></b></p>
+    <p>称号：<b id="titleName"></b></p>
+    <p>灵根：<b class="gold">天灵根</b></p>
+    <p>宗门：<b id="sectName"></b></p>
+    <div class="bar"><div id="xpbar"></div></div>
+    <p>修为：<span id="xp"></span>/<span id="need"></span></p>
+    <button onclick="cultivate()">开始修炼</button>
+    <button onclick="breakthrough()">突破</button>
+    <button onclick="tribulation()">渡劫</button>
+  </div>
 </section>
-<section class="panel" id="home"><h3>首页</h3><button onclick="claimGift()">领取999999豪礼</button><button onclick="saveGame()">保存</button><button onclick="resetGame()" class="danger">重开</button></section>
-<section class="panel hide" id="shop"><h3>商城</h3><div class="grid"><div>聚气丹<p>修为+5000</p><button onclick="buy('pill')">买888</button></div><div>神器宝箱<p>战力+30000</p><button onclick="buy('chest')">买6888</button></div><div>灵兽蛋<p>灵兽升级</p><button onclick="buy('egg')">买9999</button></div><div>仙玉礼包<p>仙玉+99999</p><button onclick="buy('jade')">买1</button></div></div></section>
-<section class="panel hide" id="bag"><h3>背包</h3><div id="bagList" class="bag"></div></section>
-<section class="panel hide" id="pet"><h3>灵兽</h3><img src="fox.svg" class="big"><p id="petText"></p><button onclick="upgradePet()">升级灵兽</button></section>
-<section class="panel hide" id="boss"><h3>BOSS挑战</h3><img src="dragon.svg" class="big"><p>上古黑龙 推荐战力500000</p><button onclick="fightBoss()">挑战</button></section>
-<section class="panel"><h3>日志</h3><div id="log"></div></section>
-</main>
-<nav><button onclick="tab('home')">首页</button><button onclick="tab('shop')">商城</button><button onclick="tab('bag')">背包</button><button onclick="tab('pet')">灵兽</button><button onclick="tab('boss')">BOSS</button></nav>
-</div><script src="game.js"></script></body></html>
+
+<section class="panel glass" id="home">
+  <h3>首页</h3>
+  <button onclick="claimDaily()">每日签到</button>
+  <button onclick="claimGift()">领取豪礼</button>
+  <button onclick="drawCard()">十连抽</button>
+  <button onclick="autoBoss()">自动打BOSS</button>
+  <button onclick="saveGame()">保存</button>
+  <button onclick="exportSave()">导出存档</button>
+  <button onclick="importSave()">导入存档</button>
+  <button class="danger" onclick="resetGame()">重开</button>
+</section>
+
+<section class="panel glass hide" id="shop">
+  <h3>商城</h3>
+  <div class="grid">
+    <div><h4>聚气丹</h4><p>修为+5000</p><button onclick="buy('pill')">买 888</button></div>
+    <div><h4>神器宝箱</h4><p>随机装备</p><button onclick="buy('chest')">买 6888</button></div>
+    <div><h4>灵兽蛋</h4><p>灵兽升级</p><button onclick="buy('egg')">买 9999</button></div>
+    <div><h4>仙玉礼包</h4><p>仙玉+99999</p><button onclick="buy('jade')">买 1</button></div>
+    <div><h4>突破石</h4><p>突破率+10%</p><button onclick="buy('breakStone')">买 1888</button></div>
+    <div><h4>扫荡令</h4><p>秘境扫荡</p><button onclick="buy('ticket')">买 2888</button></div>
+  </div>
+</section>
+
+<section class="panel glass hide" id="bag">
+  <h3>背包 / 装备</h3>
+  <div class="equip">
+    <p>武器：<b id="weapon"></b></p>
+    <p>防具：<b id="armor"></b></p>
+    <p>戒指：<b id="ring"></b></p>
+    <p>法宝：<b id="treasure"></b></p>
+  </div>
+  <div id="bagList" class="bag"></div>
+</section>
+
+<section class="panel glass hide" id="petPage">
+  <h3>灵兽</h3>
+  <img src="assets/fox.svg" class="bigPic">
+  <p>九尾天狐 Lv.<b id="petLv"></b></p>
+  <p>挂机修为加成：<span id="petBonus"></span>/秒</p>
+  <button onclick="upgradePet()">升级灵兽</button>
+</section>
+
+<section class="panel glass hide" id="sect">
+  <h3>宗门</h3>
+  <p>当前宗门：<b id="sectNow"></b></p>
+  <p>宗门等级：<b id="sectLv"></b></p>
+  <p>贡献：<b id="contrib"></b></p>
+  <button onclick="joinSect()">加入青云宗</button>
+  <button onclick="sectTask()">宗门任务</button>
+  <button onclick="sectSalary()">领取俸禄</button>
+  <button onclick="sectSkill()">学习功法</button>
+</section>
+
+<section class="panel glass hide" id="alchemy">
+  <h3>炼丹 / 炼器</h3>
+  <p>药材：<b id="herb"></b>　矿石：<b id="ore"></b></p>
+  <button onclick="makePill()">炼制聚气丹</button>
+  <button onclick="forgeEquip()">炼器强化</button>
+</section>
+
+<section class="panel glass hide" id="dao">
+  <h3>道侣</h3>
+  <p>道侣：<b id="partner"></b></p>
+  <p>好感度：<b id="love"></b></p>
+  <button onclick="meetPartner()">结识道侣</button>
+  <button onclick="giftPartner()">赠送礼物</button>
+  <button onclick="dualCultivate()">双修</button>
+</section>
+
+<section class="panel glass hide" id="dungeon">
+  <h3>秘境</h3>
+  <p>当前层数：第 <b id="dunLv"></b> 层</p>
+  <p>扫荡令：<b id="ticket"></b></p>
+  <button onclick="dungeonFight()">挑战秘境</button>
+  <button onclick="sweepDungeon()">扫荡10次</button>
+</section>
+
+<section class="panel glass hide" id="boss">
+  <h3>BOSS挑战</h3>
+  <img src="assets/dragon.svg" class="bigPic">
+  <p>上古黑龙 推荐战力500000</p>
+  <button onclick="fightBoss()">挑战BOSS</button>
+</section>
+
+<section class="panel glass hide" id="ach">
+  <h3>成就</h3>
+  <div id="achList" class="bag"></div>
+</section>
+
+<section class="panel glass logPanel">
+  <h3>修仙日志</h3>
+  <div id="log"></div>
+</section>
+
+<nav>
+  <button onclick="tab('home')">首页</button>
+  <button onclick="tab('shop')">商城</button>
+  <button onclick="tab('bag')">背包</button>
+  <button onclick="tab('petPage')">灵兽</button>
+  <button onclick="tab('sect')">宗门</button>
+  <button onclick="tab('alchemy')">炼丹</button>
+  <button onclick="tab('dao')">道侣</button>
+  <button onclick="tab('dungeon')">秘境</button>
+  <button onclick="tab('boss')">BOSS</button>
+  <button onclick="tab('ach')">成就</button>
+</nav>
+</div>
+<script src="game.js"></script>
+</body>
+</html>
