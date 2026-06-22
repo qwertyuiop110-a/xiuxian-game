@@ -2,169 +2,132 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>终极修仙版V9最终版</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>V11竖版修仙放置</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="bg"></div>
-<div class="app">
-<header class="card top">
-  <div>
-    <h1>终极修仙版 V9</h1>
-    <p>最终完整版 · 每个系统可玩 · 开局999999 · 自动存档</p>
-  </div>
-  <div class="res">
-    <span>💎仙玉 <b id="jade"></b></span>
-    <span>🪙灵石 <b id="stone"></b></span>
-    <span>⚔️战力 <b id="power"></b></span>
-    <span>👑VIP <b id="vip"></b></span>
+<div class="phone">
+<header>
+  <h1>仙途放置 V11</h1>
+  <div class="topres">
+    <span>🪙<b id="stone"></b></span>
+    <span>💎<b id="jade"></b></span>
+    <span>⚔️<b id="power"></b></span>
   </div>
 </header>
 
-<section class="card hero">
-  <div class="heroStage">
-    <div class="aura"></div>
-    <div class="heroPic">仙</div>
-    <div class="foxPic">狐</div>
+<section class="stage">
+  <div class="enemy">
+    <div class="enemyIcon" id="enemyIcon">🐺</div>
+    <h2 id="enemyName">妖狼</h2>
+    <div class="hpbar"><div id="enemyHpBar"></div></div>
+    <p><span id="enemyHp"></span>/<span id="enemyMaxHp"></span></p>
   </div>
-  <div class="info">
-    <h2>修仙者</h2>
-    <p>境界：<b id="realm"></b></p>
-    <p>称号：<b id="titleName"></b></p>
-    <p>灵根：<b class="gold">天灵根</b></p>
-    <p>宗门：<b id="sectName"></b></p>
-    <div class="bar"><div id="xpbar"></div></div>
+
+  <div class="battleLine">
+    <div class="hero">仙</div>
+    <div id="floatText"></div>
+  </div>
+
+  <div class="player">
+    <p>境界：<b id="realm"></b>　关卡：<b id="stageNo"></b>/1000</p>
+    <div class="xpbar"><div id="xpbar"></div></div>
     <p>修为：<span id="xp"></span>/<span id="need"></span></p>
+    <p>血量：<b id="hp"></b>/<b id="maxHp"></b>　攻击：<b id="atk"></b>　防御：<b id="def"></b></p>
+  </div>
+</section>
+
+<section class="actions">
+  <button onclick="toggleAuto()">自动闯关：<span id="autoText">开</span></button>
+  <button onclick="attack()">手动攻击</button>
+  <button onclick="heal()">自动吃药</button>
+  <button onclick="breakthrough()">突破</button>
+</section>
+
+<section class="panel" id="main">
+  <h3>主线成长</h3>
+  <div class="grid">
     <button onclick="cultivate()">修炼</button>
-    <button onclick="breakthrough()">突破</button>
-    <button onclick="tribulation()">渡劫</button>
+    <button onclick="claimGift()">豪礼</button>
+    <button onclick="rebirth()">飞升转生</button>
+    <button onclick="saveGame()">保存</button>
   </div>
 </section>
 
-<section class="card panel" id="home">
-  <h3>首页 / 福利</h3>
-  <button onclick="claimDaily()">每日签到</button>
-  <button onclick="claimGift()">领取豪礼</button>
-  <button onclick="drawCard(10)">十连抽</button>
-  <button onclick="toggleAutoCultivate()">自动修炼：<span id="autoCultivateText">关</span></button>
-  <button onclick="toggleAutoBoss()">自动BOSS：<span id="autoBossText">关</span></button>
-  <button onclick="saveGame()">保存</button>
-  <button onclick="exportSave()">导出存档</button>
-  <button onclick="importSave()">导入存档</button>
-  <button class="danger" onclick="resetGame()">重开</button>
-</section>
-
-<section class="card panel hide" id="shop">
-  <h3>商城</h3>
-  <div class="grid" id="shopList"></div>
-</section>
-
-<section class="card panel hide" id="bag">
-  <h3>背包 / 装备</h3>
-  <div class="equip">
-    <p>武器：<b id="weapon"></b></p>
-    <p>防具：<b id="armor"></b></p>
-    <p>戒指：<b id="ring"></b></p>
-    <p>法宝：<b id="treasure"></b></p>
+<section class="panel hide" id="equip">
+  <h3>装备</h3>
+  <p>武器：<b id="weapon"></b></p>
+  <p>衣服：<b id="armor"></b></p>
+  <p>戒指：<b id="ring"></b></p>
+  <div class="grid">
+    <button onclick="forge()">强化装备</button>
+    <button onclick="autoEquip()">自动穿戴最好装备</button>
+    <button onclick="openChest()">开神器宝箱</button>
+    <button onclick="washEquip()">洗练属性</button>
   </div>
-  <div id="bagList" class="bag"></div>
 </section>
 
-<section class="card panel hide" id="pet">
+<section class="panel hide" id="pet">
   <h3>灵兽</h3>
-  <div id="petList" class="grid"></div>
-</section>
-
-<section class="card panel hide" id="sect">
-  <h3>宗门</h3>
-  <p>当前宗门：<b id="sectNow"></b></p>
-  <p>宗门等级：<b id="sectLv"></b>　贡献：<b id="contrib"></b></p>
+  <p>出战：<b id="petName"></b> Lv.<b id="petLv"></b> ⭐<b id="petStar"></b></p>
   <div class="grid">
-    <div><h4>青云宗</h4><p>修炼加成</p><button onclick="joinSect('青云宗')">加入</button></div>
-    <div><h4>凌霄宗</h4><p>战力加成</p><button onclick="joinSect('凌霄宗')">加入</button></div>
-    <div><h4>宗门任务</h4><p>贡献/修为/灵石</p><button onclick="sectTask()">完成任务</button></div>
-    <div><h4>宗门俸禄</h4><p>按等级领取</p><button onclick="sectSalary()">领取</button></div>
-    <div><h4>宗门功法</h4><p>提升战力</p><button onclick="sectSkill()">学习</button></div>
-    <div><h4>宗门BOSS</h4><p>掉落宝箱</p><button onclick="sectBoss()">挑战</button></div>
+    <button onclick="petUp()">升级</button>
+    <button onclick="petStarUp()">升星</button>
+    <button onclick="changePet()">切换灵兽</button>
+    <button onclick="petSkill()">释放技能</button>
   </div>
 </section>
 
-<section class="card panel hide" id="alchemy">
-  <h3>炼丹 / 炼器</h3>
-  <p>药材：<b id="herb"></b>　矿石：<b id="ore"></b>　魂晶：<b id="soul"></b></p>
+<section class="panel hide" id="shop">
+  <h3>商城</h3>
+  <div class="shopgrid" id="shopList"></div>
+</section>
+
+<section class="panel hide" id="realmPage">
+  <h3>秘境 / BOSS</h3>
+  <p>秘境层数：<b id="dungeonLv"></b>　扫荡令：<b id="ticket"></b></p>
   <div class="grid">
-    <div><h4>聚气丹</h4><p>消耗10药材，修为+15000</p><button onclick="makePill('聚气丹')">炼制</button></div>
-    <div><h4>破境丹</h4><p>消耗30药材，突破石+1</p><button onclick="makePill('破境丹')">炼制</button></div>
-    <div><h4>九转金丹</h4><p>消耗100药材，修为暴涨</p><button onclick="makePill('九转金丹')">炼制</button></div>
-    <div><h4>强化装备</h4><p>消耗矿石，提升战力</p><button onclick="forgeEquip()">炼器</button></div>
-    <div><h4>淬炼法宝</h4><p>消耗魂晶，提升法宝</p><button onclick="refineTreasure()">淬炼</button></div>
-    <div><h4>材料兑换</h4><p>用灵石购买材料</p><button onclick="buyMaterials()">兑换</button></div>
+    <button onclick="dungeon()">秘境挑战</button>
+    <button onclick="sweep()">扫荡十次</button>
+    <button onclick="worldBoss()">世界BOSS</button>
+    <button onclick="randomEvent()">随机奇遇</button>
   </div>
 </section>
 
-<section class="card panel hide" id="dao">
-  <h3>道侣</h3>
-  <p>当前道侣：<b id="partner"></b>　好感度：<b id="love"></b></p>
-  <div class="grid" id="partnerList"></div>
-</section>
-
-<section class="card panel hide" id="dungeon">
-  <h3>秘境</h3>
-  <p>当前层数：第 <b id="dunLv"></b> 层　扫荡令：<b id="ticket"></b></p>
+<section class="panel hide" id="sect">
+  <h3>宗门 / 道侣</h3>
+  <p>宗门：<b id="sectName"></b> Lv.<b id="sectLv"></b>　贡献：<b id="contrib"></b></p>
+  <p>道侣：<b id="partner"></b>　好感：<b id="love"></b></p>
   <div class="grid">
-    <div><h4>通天秘境</h4><p>逐层挑战</p><button onclick="dungeonFight()">挑战</button></div>
-    <div><h4>快速扫荡</h4><p>消耗10扫荡令</p><button onclick="sweepDungeon()">扫荡10次</button></div>
-    <div><h4>材料秘境</h4><p>药材矿石</p><button onclick="materialDungeon()">进入</button></div>
-    <div><h4>神兽秘境</h4><p>灵兽经验</p><button onclick="petDungeon()">进入</button></div>
+    <button onclick="joinSect()">加入宗门</button>
+    <button onclick="sectTask()">宗门任务</button>
+    <button onclick="meetPartner()">结识道侣</button>
+    <button onclick="dualCultivate()">双修</button>
   </div>
 </section>
 
-<section class="card panel hide" id="boss">
-  <h3>世界BOSS</h3>
-  <div class="bossImg" id="bossEmoji">🐉</div>
-  <h2 id="bossName"></h2>
-  <p>生命：<b id="bossHp"></b>/<b id="bossMax"></b></p>
-  <div class="bar red"><div id="bossbar"></div></div>
-  <p>推荐战力：<b id="bossNeed"></b></p>
-  <button onclick="attackBoss()">攻击</button>
-  <button onclick="nextBoss()">切换BOSS</button>
-  <button onclick="toggleAutoBoss()">自动BOSS：<span id="autoBossText2">关</span></button>
-</section>
-
-<section class="card panel hide" id="auction">
-  <h3>拍卖行</h3>
-  <div class="grid" id="auctionList"></div>
-</section>
-
-<section class="card panel hide" id="rank">
-  <h3>排行榜</h3>
-  <div id="rankList" class="rank"></div>
-</section>
-
-<section class="card panel hide" id="ach">
+<section class="panel hide" id="bag">
+  <h3>背包 / 成就</h3>
+  <div id="bagList" class="bag"></div>
   <h3>成就</h3>
   <div id="achList" class="bag"></div>
 </section>
 
-<section class="card logCard">
-  <h3>修仙日志</h3>
+<section class="logbox">
+  <h3>日志</h3>
   <div id="log"></div>
 </section>
 
 <nav>
-  <button onclick="tab('home')">首页</button>
-  <button onclick="tab('shop')">商城</button>
-  <button onclick="tab('bag')">背包</button>
+  <button onclick="tab('main')">主页</button>
+  <button onclick="tab('equip')">装备</button>
   <button onclick="tab('pet')">灵兽</button>
+  <button onclick="tab('shop')">商城</button>
+  <button onclick="tab('realmPage')">秘境</button>
   <button onclick="tab('sect')">宗门</button>
-  <button onclick="tab('alchemy')">炼丹</button>
-  <button onclick="tab('dao')">道侣</button>
-  <button onclick="tab('dungeon')">秘境</button>
-  <button onclick="tab('boss')">BOSS</button>
-  <button onclick="tab('auction')">拍卖</button>
-  <button onclick="tab('rank')">排行</button>
-  <button onclick="tab('ach')">成就</button>
+  <button onclick="tab('bag')">背包</button>
 </nav>
 </div>
 <script src="game.js"></script>

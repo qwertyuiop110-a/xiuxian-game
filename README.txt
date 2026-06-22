@@ -1,1 +1,1 @@
-上传 index.html、style.css、game.js、assets文件夹 到 GitHub 根目录。刷新 ?v=900
+上传 index.html、style.css、game.js、assets文件夹。打开 ?v=1100

@@ -1,78 +1,59 @@
-const realms=['炼气一层','炼气二层','炼气三层','筑基初期','筑基中期','金丹初期','元婴初期','化神期','炼虚期','合体期','大乘期','渡劫期','真仙','仙王','仙帝','天尊','道祖'];
-const bosses=[
-{name:'妖狼王',emoji:'🐺',hp:300000,need:100000,reward:50000},
-{name:'黑龙王',emoji:'🐉',hp:1200000,need:500000,reward:180000},
-{name:'魔尊',emoji:'👹',hp:5000000,need:1500000,reward:600000},
-{name:'上古真龙',emoji:'🐲',hp:20000000,need:5000000,reward:2000000},
-{name:'天道化身',emoji:'⚡',hp:80000000,need:18000000,reward:8000000}
-];
-const shopItems=[
-['pill','聚气丹','修为+5000',888],['chest','神器宝箱','随机装备/战力',6888],['egg','灵兽蛋','灵兽升级',9999],['jade','仙玉礼包','仙玉+99999',1],['breakStone','突破石','突破成功率提升',1888],['ticket','扫荡令','秘境扫荡',2888],['mat','材料包','药材矿石魂晶',5000],['vip','VIP经验','VIP等级+1',99999]
-];
-const pets=[['白狐',3000],['青鸾',8000],['麒麟',16000],['应龙',32000],['鲲鹏',64000]];
-const partners=['洛清璃','红颜知己','月神仙子','九天玄女'];
-let d=JSON.parse(localStorage.getItem('xiuxian_v9_final'))||{
-stone:999999,jade:999999,xp:0,realm:0,power:1589642,vip:15,petIndex:0,petLevel:1,sect:'散修',sectLv:0,contrib:0,dunLv:1,ticket:10,daily:'',
-weapon:'新手神剑',armor:'青云法袍',ring:'玄天戒',treasure:'无',breakStone:0,herb:100,ore:100,soul:50,partner:'暂无',love:0,title:'初入仙途',
-bag:['聚气丹 x99','神器宝箱 x1','灵兽蛋 x1'],ach:['开局豪礼'],bossIndex:1,bossHp:1200000,autoBoss:false,autoCultivate:true,last:Date.now()
+const realms=['炼气','筑基','金丹','元婴','化神','炼虚','合体','大乘','渡劫','真仙','仙王','仙帝','天尊','道祖'];
+const pets=['白狐','青鸾','麒麟','应龙','鲲鹏'];
+const qualities=['白','绿','蓝','紫','橙','红','神'];
+const shop=[['丹药','修为+20000',888],['神器宝箱','随机装备',6888],['扫荡令','秘境扫荡',2888],['灵兽蛋','灵兽升级',9999],['材料包','强化材料',5000],['仙玉礼包','仙玉+99999',1]];
+let d=JSON.parse(localStorage.getItem('xiuxian_v11_idle'))||{
+stone:9999999,jade:9999999,power:1200000,vip:15,stage:1,enemyHp:0,xp:0,realm:0,hp:10000,maxHp:10000,atk:18000,def:3000,auto:true,
+weapon:{name:'新手神剑',q:3,lv:1,atk:10000},armor:{name:'青云法袍',q:3,lv:1,hp:8000,def:2000},ring:{name:'玄天戒',q:3,lv:1,atk:5000},
+pet:0,petLv:1,petStar:1,ticket:20,dungeonLv:1,sect:'散修',sectLv:0,contrib:0,partner:'暂无',love:0,bag:['聚气丹x99','神器宝箱x3'],ach:['开局至尊'],last:Date.now()
 };
-function need(){return Math.floor(1000*Math.pow(1.52,d.realm))}
-function petBonus(){return pets[d.petIndex][1]*d.petLevel}
+function need(){return Math.floor(1000*Math.pow(1.55,d.realm))}
+function enemy(){let isBoss=d.stage%10===0;return {name:isBoss?'关卡BOSS·'+d.stage:'妖兽·'+d.stage,icon:isBoss?'👹':['🐺','🐍','🦇','🐯','🐲'][d.stage%5],hp:Math.floor(60000*Math.pow(1.08,d.stage)),atk:Math.floor(600*Math.pow(1.06,d.stage)),reward:Math.floor(2000*Math.pow(1.05,d.stage)),boss:isBoss}}
 function log(t){let e=document.getElementById('log');e.innerHTML='【'+new Date().toLocaleTimeString()+'】'+t+'<br>'+e.innerHTML}
-function addAch(a){if(!d.ach.includes(a)){d.ach.push(a);log('获得成就：'+a)}}
-function save(){d.last=Date.now();localStorage.setItem('xiuxian_v9_final',JSON.stringify(d))}
-function renderShop(){shopList.innerHTML=shopItems.map(i=>`<div><h4>${i[1]}</h4><p>${i[2]}</p><button onclick="buy('${i[0]}')">买 ${i[3]}</button></div>`).join('')}
-function renderPets(){petList.innerHTML=pets.map((p,i)=>`<div><h4>${i===d.petIndex?'✅ ':''}${p[0]}</h4><p>基础加成 ${p[1]}/秒</p><button onclick="choosePet(${i})">出战</button><button onclick="upgradePet(${i})">升级</button></div>`).join('')}
-function renderPartners(){partnerList.innerHTML=partners.map(p=>`<div><h4>${p}</h4><p>双修加成</p><button onclick="meetPartner('${p}')">结识</button><button onclick="giftPartner()">送礼</button><button onclick="dualCultivate()">双修</button></div>`).join('')}
+function addAch(a){if(!d.ach.includes(a)){d.ach.push(a);log('成就：'+a)}}
+function save(){d.last=Date.now();localStorage.setItem('xiuxian_v11_idle',JSON.stringify(d))}
+function calc(){d.atk=8000+d.weapon.atk+d.ring.atk+d.petLv*d.petStar*2500+d.realm*6000;d.maxHp=10000+d.armor.hp+d.realm*12000;d.def=2000+d.armor.def+d.realm*1500;d.power=d.atk*5+d.def*8+d.maxHp+ d.petLv*d.petStar*15000}
+function spawn(){let e=enemy();if(!d.enemyHp||d.enemyHp<=0||d.enemyHp>e.hp)d.enemyHp=e.hp}
 function update(){
-stone.textContent=d.stone;jade.textContent=d.jade;power.textContent=d.power;vip.textContent=d.vip;realm.textContent=realms[d.realm]||'道祖';xp.textContent=Math.floor(d.xp);document.getElementById('need').textContent=need();xpbar.style.width=Math.min(100,d.xp/need()*100)+'%';
-titleName.textContent=d.title;sectName.textContent=d.sect;sectNow.textContent=d.sect;sectLv.textContent=d.sectLv;contrib.textContent=d.contrib;
-weapon.textContent=d.weapon;armor.textContent=d.armor;ring.textContent=d.ring;treasure.textContent=d.treasure;bagList.innerHTML=d.bag.map(x=>'<div>'+x+'</div>').join('');
-herb.textContent=d.herb;ore.textContent=d.ore;soul.textContent=d.soul;partner.textContent=d.partner;love.textContent=d.love;dunLv.textContent=d.dunLv;ticket.textContent=d.ticket;
-autoBossText.textContent=d.autoBoss?'开':'关';autoBossText2.textContent=d.autoBoss?'开':'关';autoCultivateText.textContent=d.autoCultivate?'开':'关';
-let b=bosses[d.bossIndex];bossName.textContent=b.name;bossEmoji.textContent=b.emoji;bossNeed.textContent=b.need;bossMax.textContent=b.hp;bossHp.textContent=Math.max(0,Math.floor(d.bossHp));bossbar.style.width=Math.max(0,d.bossHp/b.hp*100)+'%';
-achList.innerHTML=d.ach.map(x=>'<div>🏆 '+x+'</div>').join('');
-rankList.innerHTML=['道友·逍遥子 99999999','道友·青云子 88888888','你 '+d.power,'道友·玄天 66666666','道友·白帝 55555555'].map((x,i)=>`<div>第${i+1}名 ${x}</div>`).join('');
-renderPets();renderShop();renderPartners();save()
+calc();spawn();let e=enemy();
+stone.textContent=d.stone;jade.textContent=d.jade;power.textContent=d.power;realm.textContent=realms[d.realm];stageNo.textContent=d.stage;xp.textContent=Math.floor(d.xp);document.getElementById('need').textContent=need();xpbar.style.width=Math.min(100,d.xp/need()*100)+'%';
+hp.textContent=Math.floor(d.hp);maxHp.textContent=d.maxHp;atk.textContent=d.atk;def.textContent=d.def;enemyName.textContent=e.name;enemyIcon.textContent=e.icon;enemyHp.textContent=Math.max(0,Math.floor(d.enemyHp));enemyMaxHp.textContent=e.hp;enemyHpBar.style.width=Math.max(0,d.enemyHp/e.hp*100)+'%';autoText.textContent=d.auto?'开':'关';
+weapon.textContent=`${qualities[d.weapon.q]}·${d.weapon.name}+${d.weapon.lv}`;armor.textContent=`${qualities[d.armor.q]}·${d.armor.name}+${d.armor.lv}`;ring.textContent=`${qualities[d.ring.q]}·${d.ring.name}+${d.ring.lv}`;
+petName.textContent=pets[d.pet];petLv.textContent=d.petLv;petStar.textContent=d.petStar;ticket.textContent=d.ticket;dungeonLv.textContent=d.dungeonLv;sectName.textContent=d.sect;sectLv.textContent=d.sectLv;contrib.textContent=d.contrib;partner.textContent=d.partner;love.textContent=d.love;
+bagList.innerHTML=d.bag.slice(-40).reverse().map(x=>'<div>'+x+'</div>').join('');achList.innerHTML=d.ach.map(x=>'<div>🏆 '+x+'</div>').join('');
+shopList.innerHTML=shop.map((s,i)=>`<div><b>${s[0]}</b><p>${s[1]}</p><button onclick="buy(${i})">买 ${s[2]}</button></div>`).join('');
+save()
 }
-function gainXpBase(){return 1500+petBonus()+d.realm*900+d.sectLv*700+(d.partner!=='暂无'?2000:0)+d.vip*100}
-function cultivate(){let g=gainXpBase();d.xp+=g;d.power+=1200+d.realm*260;log('修炼获得 '+g+' 修为');update()}
-function breakthrough(){if(d.realm>=realms.length-1){d.title='道祖';addAch('证道道祖');log('已是最高境界');return}if(d.xp<need()){log('修为不足');return}let rate=Math.min(.98,.68+d.breakStone*.08+d.sectLv*.01+d.vip*.003);if(Math.random()<rate){d.xp-=need();d.realm++;d.power+=100000+d.realm*20000;d.breakStone=Math.max(0,d.breakStone-1);log('突破成功：'+realms[d.realm]);if(d.realm>=3)addAch('筑基有成');if(d.realm>=6)addAch('元婴老怪');if(d.realm>=12)addAch('飞升真仙')}else{d.xp=Math.floor(d.xp*.82);log('突破失败，损失部分修为')}update()}
-function tribulation(){if(d.realm<11){log('渡劫期后才能渡劫');return}if(Math.random()<.75){d.power+=300000;d.jade+=80000;d.title='雷劫真人';addAch('渡劫成功');log('渡劫成功')}else{d.xp=Math.floor(d.xp*.7);log('渡劫失败')}update()}
-function buy(t){let item=shopItems.find(x=>x[0]===t);if(item&&d.stone<item[3]){log('灵石不足');return}if(item)d.stone-=item[3];if(t==='pill'){d.xp+=5000;d.bag.push('聚气丹')}if(t==='chest'){d.power+=80000;d.weapon=randomEquip();d.bag.push('神器宝箱')}if(t==='egg'){d.petLevel++;d.bag.push('灵兽蛋')}if(t==='jade'){d.jade+=99999}if(t==='breakStone'){d.breakStone++;d.bag.push('突破石')}if(t==='ticket'){d.ticket++;d.bag.push('扫荡令')}if(t==='mat'){d.herb+=50;d.ore+=50;d.soul+=20}if(t==='vip'){d.vip++}log('购买成功：'+(item?item[1]:t));update()}
-function randomEquip(){return ['玄天神剑','太虚仙剑','黑龙斩天剑','混沌帝剑','诛仙剑'][Math.floor(Math.random()*5)]}
-function claimGift(){d.stone+=999999;d.jade+=999999;d.bag.push('至尊豪礼');addAch('领取豪礼');log('领取豪礼成功');update()}
-function claimDaily(){let today=new Date().toDateString();if(d.daily===today){log('今日已签到');return}d.daily=today;d.stone+=80000;d.ticket+=5;d.herb+=30;d.ore+=30;d.bag.push('每日礼包');log('签到成功');update()}
-function drawCard(n=10){d.jade-=1888;let pool=['神话装备','仙品丹药','应龙残魂','极品矿石','远古功法','仙侣信物'];let got=[];for(let i=0;i<n;i++)got.push(pool[Math.floor(Math.random()*pool.length)]);d.bag.push(...got);d.power+=100000;log('抽卡获得：'+got.join('、'));update()}
-function choosePet(i){d.petIndex=i;log('出战灵兽：'+pets[i][0]);update()}
-function upgradePet(i=d.petIndex){let cost=50000*d.petLevel;if(d.stone<cost){log('灵石不足');return}d.stone-=cost;d.petIndex=i;d.petLevel++;d.power+=80000;log('灵兽升级');update()}
-function joinSect(name){if(d.sect!=='散修'){log('已加入宗门：'+d.sect);return}d.sect=name;d.sectLv=1;log('加入'+name);update()}
-function sectTask(){if(d.sect==='散修'){log('先加入宗门');return}d.contrib+=120;d.xp+=15000;d.stone+=30000;if(d.contrib>=d.sectLv*500){d.contrib=0;d.sectLv++;log('宗门升级')}else log('完成宗门任务');update()}
-function sectSalary(){let s=40000*(d.sectLv||1);d.stone+=s;log('领取俸禄 '+s);update()}
-function sectSkill(){let c=100*d.sectLv;if(d.contrib<c){log('贡献不足');return}d.contrib-=c;d.power+=120000;d.treasure='宗门功法 Lv.'+d.sectLv;log('学习功法成功');update()}
-function sectBoss(){d.power+=50000;d.stone+=100000;d.bag.push('宗门BOSS宝箱');log('击败宗门BOSS');update()}
-function makePill(type){if(type==='聚气丹'){if(d.herb<10)return log('药材不足');d.herb-=10;d.xp+=15000}if(type==='破境丹'){if(d.herb<30)return log('药材不足');d.herb-=30;d.breakStone++}if(type==='九转金丹'){if(d.herb<100)return log('药材不足');d.herb-=100;d.xp+=200000}d.bag.push(type);log('炼制成功：'+type);update()}
-function forgeEquip(){if(d.ore<20)return log('矿石不足');d.ore-=20;d.power+=120000;d.armor='强化仙甲+'+Math.floor(d.power/100000);log('炼器成功');update()}
-function refineTreasure(){if(d.soul<10)return log('魂晶不足');d.soul-=10;d.power+=160000;d.treasure='太古法宝+'+Math.floor(d.power/200000);log('法宝淬炼成功');update()}
-function buyMaterials(){d.stone-=50000;d.herb+=60;d.ore+=60;d.soul+=25;log('材料兑换成功');update()}
-function meetPartner(p){if(d.partner!=='暂无'){log('已有道侣');return}d.partner=p;d.love=20;log('结识道侣：'+p);update()}
-function giftPartner(){if(d.partner==='暂无')return log('先结识道侣');d.stone-=10000;d.love+=10;log('好感度+10');update()}
-function dualCultivate(){if(d.partner==='暂无')return log('先结识道侣');let g=30000+d.love*800;d.xp+=g;d.power+=d.love*1500;log('双修获得修为 '+g);update()}
-function dungeonFight(){let req=d.dunLv*120000;if(d.power<req)return log('战力不足，需要 '+req);d.dunLv++;d.xp+=d.dunLv*12000;d.stone+=d.dunLv*30000;d.herb+=8;d.ore+=8;if(Math.random()<.25)d.bag.push('秘境材料');if(d.dunLv>=100)addAch('秘境百层');log('通过秘境第 '+(d.dunLv-1)+' 层');update()}
-function sweepDungeon(){if(d.ticket<10)return log('扫荡令不足');d.ticket-=10;d.xp+=d.dunLv*120000;d.stone+=d.dunLv*280000;d.herb+=40;d.ore+=40;log('扫荡10次完成');update()}
-function materialDungeon(){d.herb+=80;d.ore+=80;d.soul+=30;log('材料秘境收益已领取');update()}
-function petDungeon(){d.petLevel++;d.power+=50000;log('神兽秘境：灵兽升级');update()}
-function attackBoss(){let b=bosses[d.bossIndex];if(d.power<b.need)return log('战力不足，需要 '+b.need);let dmg=Math.floor(d.power*(.08+Math.random()*.14));d.bossHp-=dmg;log('攻击 '+b.name+' 造成 '+dmg+' 伤害');if(d.bossHp<=0){d.stone+=b.reward;d.power+=Math.floor(b.reward/2);d.herb+=20;d.ore+=20;d.bag.push(b.name+' 掉落宝箱');addAch('击败'+b.name);log('击败 '+b.name+'，灵石+'+b.reward);d.bossHp=b.hp}update()}
-function nextBoss(){d.bossIndex=(d.bossIndex+1)%bosses.length;d.bossHp=bosses[d.bossIndex].hp;log('切换BOSS：'+bosses[d.bossIndex].name);update()}
-function toggleAutoBoss(){d.autoBoss=!d.autoBoss;log('自动BOSS已'+(d.autoBoss?'开启':'关闭'));update()}
-function toggleAutoCultivate(){d.autoCultivate=!d.autoCultivate;log('自动修炼已'+(d.autoCultivate?'开启':'关闭'));update()}
-function buyAuction(i){let goods=[['神话仙剑',500000],['天狐残魂',300000],['九转金丹',200000],['太古法宝',800000]];let g=goods[i];if(d.stone<g[1])return log('灵石不足');d.stone-=g[1];d.bag.push(g[0]);d.power+=150000;log('拍下 '+g[0]);update()}
-function renderAuction(){auctionList.innerHTML=['神话仙剑','天狐残魂','九转金丹','太古法宝'].map((x,i)=>`<div><h4>${x}</h4><p>稀有拍卖品</p><button onclick="buyAuction(${i})">竞拍</button></div>`).join('')}
-function tab(id){['home','shop','bag','pet','sect','alchemy','dao','dungeon','boss','auction','rank','ach'].forEach(x=>document.getElementById(x).classList.add('hide'));document.getElementById(id).classList.remove('hide');renderAuction()}
+function float(t){floatText.textContent=t;setTimeout(()=>floatText.textContent='',500)}
+function attack(){let e=enemy();let dmg=Math.max(1,Math.floor(d.atk*(.8+Math.random()*.5)));d.enemyHp-=dmg;float('-'+dmg);let hurt=Math.max(1,e.atk-d.def);d.hp=Math.max(0,d.hp-hurt);if(d.hp<=0){d.hp=d.maxHp;d.stone=Math.max(0,d.stone-1000);log('战败复活，损失少量灵石')}if(d.enemyHp<=0){win(e)}update()}
+function win(e){d.stage++;d.stone+=e.reward;d.xp+=e.reward*2;d.hp=Math.min(d.maxHp,d.hp+d.maxHp*.25);if(e.boss){dropEquip();addAch('击败第'+(d.stage-1)+'关BOSS')}if(d.stage===100)addAch('百关斩妖');if(d.stage===1000)addAch('通关千层');d.enemyHp=enemy().hp;log('击败 '+e.name+'，获得灵石 '+e.reward)}
+function dropEquip(){let q=Math.min(6,Math.floor(Math.random()*4)+Math.floor(d.stage/120));let type=['weapon','armor','ring'][Math.floor(Math.random()*3)];let names={weapon:['仙剑','魔刀','雷霆剑'],armor:['仙甲','道袍','龙鳞甲'],ring:['灵戒','仙戒','帝戒']};let item={name:names[type][Math.floor(Math.random()*3)],q,lv:1,atk:type!=='armor'?Math.floor(6000*(q+1)*Math.pow(1.02,d.stage)):0,hp:type==='armor'?Math.floor(12000*(q+1)*Math.pow(1.02,d.stage)):0,def:type==='armor'?Math.floor(3000*(q+1)*Math.pow(1.02,d.stage)):0};d.bag.push(`${qualities[q]}·${item.name}`);if(score(item)>score(d[type])){d[type]=item;log('自动穿戴更强装备：'+qualities[q]+'·'+item.name)}}
+function score(i){return (i.atk||0)*5+(i.hp||0)+(i.def||0)*8+i.q*10000+i.lv*2000}
+function cultivate(){let g=3000+d.realm*1200+d.petLv*d.petStar*1000;d.xp+=g;log('修炼获得修为 '+g);update()}
+function breakthrough(){if(d.xp<need())return log('修为不足');d.xp-=need();d.realm=Math.min(realms.length-1,d.realm+1);d.hp=d.maxHp;addAch('突破'+realms[d.realm]);log('突破到 '+realms[d.realm]);update()}
+function heal(){d.hp=d.maxHp;log('已恢复血量');update()}
+function toggleAuto(){d.auto=!d.auto;update()}
+function claimGift(){d.stone+=9999999;d.jade+=9999999;d.bag.push('至尊豪礼');log('领取至尊豪礼');update()}
+function rebirth(){if(d.stage<300)return log('300关后可飞升转生');d.stage=1;d.realm=0;d.atk+=100000;d.power+=1000000;addAch('飞升转生');log('飞升转生，获得永久加成');update()}
+function forge(){let cost=5000*(d.weapon.lv+d.armor.lv+d.ring.lv);if(d.stone<cost)return log('灵石不足');d.stone-=cost;d.weapon.lv++;d.armor.lv++;d.ring.lv++;d.weapon.atk+=5000;d.armor.hp+=10000;d.armor.def+=2000;d.ring.atk+=3000;log('装备强化成功');update()}
+function autoEquip(){log('已自动穿戴当前最高装备');update()}
+function openChest(){d.stone-=6888;dropEquip();update()}
+function washEquip(){d.stone-=50000;d.weapon.atk=Math.floor(d.weapon.atk*1.12);d.ring.atk=Math.floor(d.ring.atk*1.12);log('洗练成功，攻击提升');update()}
+function petUp(){d.stone-=20000*d.petLv;d.petLv++;log('灵兽升级');update()}
+function petStarUp(){if(d.petLv<10)return log('灵兽10级后可升星');d.petLv=1;d.petStar++;log('灵兽升星');update()}
+function changePet(){d.pet=(d.pet+1)%pets.length;log('切换灵兽：'+pets[d.pet]);update()}
+function petSkill(){d.enemyHp-=d.atk*3;log('灵兽技能造成大量伤害');update()}
+function buy(i){let s=shop[i];if(d.stone<s[2])return log('灵石不足');d.stone-=s[2];if(i===0)d.xp+=20000;if(i===1)dropEquip();if(i===2)d.ticket++;if(i===3)d.petLv++;if(i===4)d.stone+=0,d.bag.push('材料包');if(i===5)d.jade+=99999;log('购买 '+s[0]);update()}
+function dungeon(){let req=d.dungeonLv*80000;if(d.power<req)return log('秘境战力不足');d.dungeonLv++;d.stone+=d.dungeonLv*30000;d.xp+=d.dungeonLv*50000;dropEquip();log('通关秘境');update()}
+function sweep(){if(d.ticket<10)return log('扫荡令不足');d.ticket-=10;d.stone+=d.dungeonLv*300000;d.xp+=d.dungeonLv*300000;log('扫荡完成');update()}
+function worldBoss(){d.enemyHp=1;attack();d.stone+=500000;log('世界BOSS奖励到账');update()}
+function randomEvent(){let r=Math.random();if(r<.33){d.jade+=100000;log('奇遇：获得仙玉')}else if(r<.66){dropEquip();log('奇遇：获得装备')}else{d.xp+=300000;log('奇遇：修为暴涨')}update()}
+function joinSect(){if(d.sect!=='散修')return log('已加入宗门');d.sect='青云宗';d.sectLv=1;log('加入青云宗');update()}
+function sectTask(){d.contrib+=100;d.xp+=50000;d.stone+=50000;if(d.contrib>=d.sectLv*500){d.contrib=0;d.sectLv++;log('宗门升级')}else log('完成宗门任务');update()}
+function meetPartner(){if(d.partner!=='暂无')return log('已有道侣');d.partner='洛清璃';d.love=20;log('结识道侣洛清璃');update()}
+function dualCultivate(){if(d.partner==='暂无')return log('先结识道侣');d.xp+=100000+d.love*1000;d.love+=5;log('双修完成');update()}
+function tab(id){['main','equip','pet','shop','realmPage','sect','bag'].forEach(x=>document.getElementById(x).classList.add('hide'));document.getElementById(id).classList.remove('hide')}
 function saveGame(){save();log('已保存')}
-function exportSave(){prompt('复制存档：',btoa(unescape(encodeURIComponent(JSON.stringify(d)))))}
-function importSave(){let s=prompt('粘贴存档');if(!s)return;try{d=JSON.parse(decodeURIComponent(escape(atob(s))));log('导入成功');update()}catch(e){alert('存档错误')}}
-function resetGame(){if(confirm('确定重开？')){localStorage.removeItem('xiuxian_v9_final');location.reload()}}
-let off=Math.min(7200,Math.floor((Date.now()-(d.last||Date.now()))/1000));if(off>10){d.xp+=off*gainXpBase();d.stone+=off*(1000+d.realm*200);log('离线挂机 '+off+' 秒')}
-setInterval(()=>{if(d.autoCultivate){d.xp+=gainXpBase();d.stone+=1000+d.realm*200}if(d.autoBoss)attackBoss();else update()},1000);
-update();renderShop();renderPets();renderPartners();renderAuction();log('V9最终完整版已启动');
+let off=Math.min(21600,Math.floor((Date.now()-(d.last||Date.now()))/1000));if(off>10){d.stone+=off*1200;d.xp+=off*2500;log('离线收益 '+off+' 秒')}
+setInterval(()=>{if(d.auto)attack();else update();d.xp+=500+d.realm*100},900);
+update();log('V11竖版放置挂机终极版启动');
