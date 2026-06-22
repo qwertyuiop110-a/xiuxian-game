@@ -1,0 +1,1 @@
+解压后把 index.html、style.css、game.js、images 文件夹全部上传到 GitHub 仓库根目录。
